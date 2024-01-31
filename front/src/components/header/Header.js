@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./Header.module.scss";
 import { Link, NavLink } from "react-router-dom";
 import { FaShoppingCart, FaTimes } from "react-icons/fa";
@@ -20,14 +20,16 @@ const Header = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [scrollPage, setScrollPage] = useState(false);
 
-  const fixNavbar = () => {
-    if (window.screenY > 50) {
-      setScrollPage(true);
-    } else {
-      setScrollPage(false);
-    }
-  };
-  window.addEventListener("scroll", fixNavbar);
+  useEffect(() => {
+    const fixNavbar = () => {
+      if (window.screenY > 50) {
+        setScrollPage(true);
+      } else {
+        setScrollPage(false);
+      }
+    };
+    window.addEventListener("scroll", fixNavbar);
+  }, []);
 
   const toggleMenu = () => {
     setShowMenu(!showMenu);
@@ -47,7 +49,7 @@ const Header = () => {
   );
 
   return (
-    <header>
+    <header className={scrollPage ? `${styles.fixed}` : null}>
       <div className={styles.header}>
         {logo}
         <nav
