@@ -3,6 +3,12 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const User = require("../models/userModel.js");
 
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: "1d",
+  });
+};
+
 // Register user
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
@@ -29,6 +35,26 @@ const registerUser = asyncHandler(async (req, res) => {
     email,
     password,
   });
+
+  // Generate token
+  const token = generateToken(user._id);
+
+  if (user) {
+    res.cookie("token", token, {
+      path: "/",
+      httpOnly: true,
+      expires: new Date(Date.now() + 1000 * 86400),
+      // secure: true,
+      // sameSite: "none"
+    });
+    // send user data
+    res.status(201).json({
+      message: "user created.....",
+    });
+  } else {
+    res.status(400);
+    throw new Error("Invalid user data");
+  }
 
   res.send({
     message: "User created successfully",
